@@ -62,7 +62,6 @@ function sendImage(filename, sock){
 
 }
 
-console.log(path.join(__dirname,'..','/public','/css/base.css'))
 
 module.exports={
 
