@@ -11,7 +11,15 @@ function getExtension(filename){
 
 }
 
-function textResponse(err,data,sock,extension){
+
+
+function sendTextFile(filename,sock){
+
+	let extension=getExtension(filename);
+	const absolutePath=path.join(__dirname,'..','/public',filename);
+
+	fs.readFile(absolutePath,'utf8',(err,data)=>{
+
 
 	if(err){
 
@@ -23,21 +31,21 @@ function textResponse(err,data,sock,extension){
 		sock.write(`HTTP/1.1 200 OK\r\nContent-Type:text/${extension}\r\n\r\n${data}`)
 	}
 
-	sock.close();
+	sock.end();
+
+	})
 
 }
 
-function sendTextFile(filename,sock){
+
+
+function sendImage(filename, sock){
 
 	let extension=getExtension(filename);
-	const absolutePath=path.join(__dirname,'..','/public',filename);
+	const absolutePath=path.join(__dirname,'..','public',filename);
 
-	fs.readFile(absolutePath,'utf8',(err,data)=>{textResponse(err,data,sock,extension)})
-
-}
-
-function imgResponse(err,data,sock,extension){
-
+	fs.readFile(absolutePath,(err,data)=>{
+	
 	if(err){
 
 		sock.write(`HTTP/1.1 404 OK\r\nContent-Type:text/${extension}\r\n\r\nProblem reading file`);
@@ -49,16 +57,7 @@ function imgResponse(err,data,sock,extension){
 	}
 
 	sock.close();
-
-
-}
-
-function sendImage(filename, sock){
-
-	let extension=getExtension(filename);
-	const absolutePath=path.join(__dirname,'..','public',filename);
-
-	fs.readFile(absolutePath,(err,data)=>{imgResponse(err,data,sock,extension)});
+});
 
 }
 

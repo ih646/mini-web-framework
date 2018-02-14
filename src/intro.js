@@ -22,6 +22,22 @@ class Request {
 
 }
 
+
+const routes={
+
+	'/': webutils.sendTextFile,
+	'/such/stylish':(sock) => {
+      sock.write('HTTP/1.1 200 OK\r\nContent-Type:text/html\r\n\r\n<h3>bye</h3>');
+      sock.end();
+  },
+  	'/showanimage':(sock) => {
+      sock.write('HTTP/1.1 301 OK\r\nLocation:/such/stylish\r\n\r\n ');
+      sock.end();
+  }
+
+
+}
+
 const server=net.createServer((sock)=>{
 
 	sock.on('data',(binaryData)=>{
@@ -29,10 +45,30 @@ const server=net.createServer((sock)=>{
 		const s=binaryData.toString();
 
 		const req=new Request(s);
+		console.log(req.path);
 
-		sock.write('HTTP/1.1 200 OK\r\n\r\n' + req.body);
+		if(req.path==='/'){
 
-		sock.end();
+
+			const requestHandler=routes[req.path];
+			requestHandler('index.html',sock);
+
+
+		}
+		else if(req.path==='/such/stylish'){
+
+			const requestHandler=routes[req.path];
+			requestHandler(sock);
+
+
+		}
+		else if(req.path==='/showanimage'){
+
+			const requestHandler=routes[req.path];
+			requestHandler(sock);
+
+
+		}
 
 
 	});
