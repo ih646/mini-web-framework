@@ -28,13 +28,15 @@ function sendTextFile(filename,sock){
 
 	}
 	else{
+		console.log("Sending text file data: \n");
+		console.log(`HTTP/1.1 200 OK\r\nContent-Type: text/${extension}\r\n\r\n${data}`);
+		sock.write(`HTTP/1.1 200 OK\r\nContent-Type: text/${extension}\r\n\r\n${data}`);
 
-		sock.write(`HTTP/1.1 200 OK\r\nContent-Type:text/${extension}\r\n\r\n${data}`)
 	}
 
 	sock.end();
 
-	})
+	});
 
 }
 
@@ -48,7 +50,7 @@ function sendImage(filename, sock){
 	console.log(extension);
 
 	fs.readFile(absolutePath,{},(err,data)=>{
-	
+	// console.log("READ IMG");
 	if(err){
 
 		sock.write(`HTTP/1.1 404 Not Found\r\nContent-Type:text/${extension}\r\n\r\nProblem reading file`);
