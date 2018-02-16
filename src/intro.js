@@ -22,17 +22,26 @@ class Request {
 
 }
 
+const homepage=webutils.sendTextFile.bind(null,'index.html');
+const stylish=webutils.sendTextFile.bind(null,'stylish.html');
+const base=webutils.sendTextFile.bind(null,'base.css');
+const picsplz=webutils.sendTextFile.bind(null,'image.html');
+const animal=webutils.sendImage.bind(null,'animal.jpg');
+
 
 const routes={
 
-	'/': webutils.sendTextFile,
-	'/such/stylish':(sock) => {
-      sock.write('HTTP/1.1 200 OK\r\nContent-Type:text/html\r\n\r\n<h3>bye</h3>');
-      sock.end();
-  },
+	'/': homepage,
+	'/such/stylish':stylish,
+	'/css/base.css':base,
+	'/picsplz': picsplz,
+	'/img/animal.jpg':animal,
   	'/showanimage':(sock) => {
-      sock.write('HTTP/1.1 301 OK\r\nLocation:/such/stylish\r\n\r\n ');
-      sock.end();
+
+
+    sock.write(`HTTP/1.1 301 OK\r\nLocation:/picsplz\r\n\r\n Redirecting`);
+    sock.end();
+  
   }
 
 
@@ -42,31 +51,36 @@ const server=net.createServer((sock)=>{
 
 	sock.on('data',(binaryData)=>{
 
+
 		const s=binaryData.toString();
 
 		const req=new Request(s);
-		console.log(req.path);
 
-		if(req.path==='/'){
+		if(req.method==='POST'){
 
-
-			const requestHandler=routes[req.path];
-			requestHandler('index.html',sock);
+			console.log(req.method);
+			sock.write('HTTP/1.1 200 OK\r\n\r\n' + req.body);
+        	sock.end();
 
 
 		}
-		else if(req.path==='/such/stylish'){
+		else{
+
+			if(routes.hasOwnProperty(req.path)){
 
 			const requestHandler=routes[req.path];
 			requestHandler(sock);
 
 
-		}
-		else if(req.path==='/showanimage'){
+			}
+			
+			else{
 
-			const requestHandler=routes[req.path];
-			requestHandler(sock);
+			sock.write('HTTP/1.1 404 Not Found\r\nContent-Type:text/plain\r\n\r\nNot Found!!');
+			sock.end();
 
+
+			}
 
 		}
 

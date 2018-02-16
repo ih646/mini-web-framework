@@ -17,13 +17,14 @@ function sendTextFile(filename,sock){
 
 	let extension=getExtension(filename);
 	const absolutePath=path.join(__dirname,'..','/public',filename);
+	console.log(extension);
 
 	fs.readFile(absolutePath,'utf8',(err,data)=>{
 
 
 	if(err){
 
-		sock.write(`HTTP/1.1 404 OK\r\nContent-Type:text/plain\r\n\r\nproblem reading file`);
+		sock.write(`HTTP/1.1 404 Not Found\r\nContent-Type:text/plain\r\n\r\nproblem reading file`);
 
 	}
 	else{
@@ -43,20 +44,23 @@ function sendImage(filename, sock){
 
 	let extension=getExtension(filename);
 	const absolutePath=path.join(__dirname,'..','public',filename);
+	console.log(absolutePath);
+	console.log(extension);
 
-	fs.readFile(absolutePath,(err,data)=>{
+	fs.readFile(absolutePath,{},(err,data)=>{
 	
 	if(err){
 
-		sock.write(`HTTP/1.1 404 OK\r\nContent-Type:text/${extension}\r\n\r\nProblem reading file`);
+		sock.write(`HTTP/1.1 404 Not Found\r\nContent-Type:text/${extension}\r\n\r\nProblem reading file`);
 	}
 	else{
 
-		sock.write(`HTTP/1.1 200 OK\r\nContent-Type:text/${extension}\r\n\r\n`);
+
+		sock.write(`HTTP/1.1 200 OK\r\nContent-Type:image/${extension}\r\n\r\n`);
 		sock.write(data);
 	}
 
-	sock.close();
+	sock.end();
 });
 
 }
