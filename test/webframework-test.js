@@ -1,7 +1,6 @@
 const chai = require('chai');
 const expect = chai.expect; 
 const net = require('net');
-
 // Object.assign(global, require('../src/webframework.js'));
 const {Request, Response, App} = require('../src/webframework.js');
 
@@ -22,7 +21,7 @@ function mockSocket() {
 
 describe('Request', function() {
 
-    it('parses and http request header informationinto properties', function() {
+    it.only('parses and http request header informationinto properties', function() {
         let s = 'GET /foo.html HTTP/1.1\r\n';
         s += 'Host: localhost:8080\r\n';
         s += 'Referer: http://bar.baz/qux.html\r\n';
@@ -33,7 +32,7 @@ describe('Request', function() {
         expect(req.headers).to.deep.equal({'Host': 'localhost:8080', 'Referer': 'http://bar.baz/qux.html'});
     });
 
-    it('sets body if body is present in request', function() {
+    it.only('sets body if body is present in request', function() {
         let s = 'POST /foo/create HTTP/1.1\r\n';
         s += 'Host: localhost:8080\r\n';
         s += '\r\n';
@@ -45,7 +44,7 @@ describe('Request', function() {
         expect(req.body).to.equal('foo=bar&baz=qux');
     });
 
-    it('returns a string reprsenting the request when toString is called', function() {
+    it.only('returns a string reprsenting the request when toString is called', function() {
         let s = 'POST /foo/create HTTP/1.1\r\n';
         s += 'Host: localhost:8080\r\n';
         s += 'Referer: localhost:8080/referer.html\r\n';
@@ -55,7 +54,7 @@ describe('Request', function() {
         expect(req.toString()).to.equal(s);
     });
 
-    it('returns a string reprsenting the request when toString is called, still works with no body', function() {
+    it.only('returns a string reprsenting the request when toString is called, still works with no body', function() {
         let s = 'POST /foo/create HTTP/1.1\r\n';
         s += 'Host: localhost:8080\r\n';
         s += 'Referer: localhost:8080/referer.html\r\n';
