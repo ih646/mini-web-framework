@@ -1,13 +1,9 @@
 /* webframework.js */
 
-
-
-
-let s = ''
-s += 'GET /foo.html HTTP/1.1\r\n';   // request line
-s += 'Host: localhost:8080\r\n'; // headers
-s += '\r\n\r\n'; 
-
+const path=require('path');
+const fs=require('fs');
+const webutils=require('./webutils.js');
+const net=require("net");
 
 class Request{
 
@@ -20,7 +16,7 @@ class Request{
 		headerNames=headerNames.slice(1,headerNames.length);
 
 
-
+		this.request=s;
 		this.method=parts[0];
 		this.path=parts[1];
 		this.body=body;
@@ -32,26 +28,33 @@ class Request{
 
 		})
 
-		this.toString=function(){
-
-			return s.toString();
-		}
+	
 
 	}
+
+	toString(){
+
+			return this.request.toString();
+		}
 
 	
 
 }
 
-class Response{
 
+let contentType={
 
+	'jpeg': 'image/jpeg',
+	'jpg': 'image/jpg',
+	'png': 'image/png',
+	'gif': 'image/gif',
+	'html': 'text/html',
+	'css': 'text/css',
+	'txt': 'text/plain',
 
-	
+}
 
-	constructor(socket){
-
-		let statusCodes={
+let statusCodes={
 
 		200: 'OK',
 		301: 'Moved Permanently',
@@ -66,68 +69,151 @@ class Response{
 
 	}
 
-		this.sock: socket;
-		this.headers:{};
-		this.body:'';
-		this.statusCode='';
-		this.setHeader: function(name,value){
 
-			this.headers[name]=value;
+
+class Response{
+
+
+	constructor(socket){
+
+
+		this.sock=socket;
+		this.headers={};
+		this.body=undefined;
+		this.statusCode=undefined;
+		
+		
+	}
+		setHeader(name,value){
+
+				this.headers[name]=value;
+
+			}
+
+		write(data){
+
+				this.sock.write(data);
+
+			}
+
+		end(data){
+
+			this.sock.end(data);
 
 		}
-		this.write: function(data){
-
-			this.sock.write(`HTTP/1.1 200 OK\r\nContent-Type:${this.headers['Content-Type']}\r\n\r\n${data}`);
-
-		}
-
-		this.end: function(data){
-
-			this.sock.write(`HTTP/1.1 200 OK\r\nContent-Type:${this.headers['Content-Type']}\r\n\r\n${data}`);
-			this.sock.end();
-
-		}
-		this.send: function(statusCode,body){
+		
+		send(statusCode,body){
 
 			this.statusCode=statusCode;
 			this.body=body;
-			this.sock.write(`HTTP/1.1 ${statusCode} OK\r\nContent-Type:${this.headers['Content-Type']}\r\n\r\n${body}`);
-			this.sock.end();
-		};
+			this.sock.end(toString());
+		}
 
-		this.writeHead: function(statusCode){
+		writeHead(statusCode){
 
 			this.statusCode=statusCode;
-			this.sock.write(`HTTP/1.1 ${statusCode} OK\r\nContent-Type:${this.headers['Content-Type']}\r\n\r\n`);
+			this.sock.write(toString());
+
+		}
+		
+		redirect(statusCode,url){
+
+			 
+		        if (typeof(statusCode)==='number') {
+		            
+		            this.statusCode = statusCode;
+		            this.headers['Location'] = url;
+		        
+		        } else {
+		            
+		            this.statusCode = 301;
+		            this.headers['Location'] = statusCode;
+		        }
+		      
+		        this.sock.end(toString());
+		        
+		       
+		}
+		
+		toString(){
 
 
 
-		};
-		this.redirect: function(statusCode,url){
+			let response=`HTTP/1.1 ${this.statusCode} ${statusCodes[this.statusCode]}\r\n`
 
-			this.statusCode=statusCode===''?'301':statusCode;
+			for(let key in this.headers){
 
-			this.sock.write(`HTTP/1.1 ${this.statusCode} OK\r\nLocation:${url}\r\n\r\n Redirecting`);
-			this.sock.end();
+				response+=`${key}: ${this.headers[key]}\r\n`;
 
 
+			}
 
-		};
-		this.toString: function(){
+			response+=`\r\n`;
 
-			let response=`HTTP/1.1 ${this.statusCode} OK\r\nContent-Type:${this.headers['Content-Type']}\r\n\r\n${this.body}`;
+			if(this.body!==undefined){
+
+				response+=`${this.body}`;
+				
+
+
+			}
+
 			return response;
 
-
-		};
-		this.sendFile: function(filename){};
+		}
 		
+		sendFile(filename){
+
+			let extension=webutils.getExtension(filename);
+			const absolutePath=path.join(__dirname,'..','/public',filename);
+
+			if(extension==='html' || extension==='css' || extension==='txt'){
+
+				fs.readFile(absolutePath,'utf8',(err,data)=>{
+
+
+				this.handleRead(contentType[extension],err,data)
+
+				});
+
+
+			}
+
+			else{
+
+				fs.readFile(absolutePath,{},(err,data)=>{
+
+
+				this.handleRead(contentType[extension],err,data)
+
+				});
+
+			}
+			
+
+		}
+
+		handleRead(contentType, err, data){
+
+			if(err){
+
+					this.setHeader('Content-Type', contentType);
+					this.send(500, 'Error reading file!');
+				}
+			
+			else{
+
+				this.setHeader('Content-Type',contentType)
+				this.writeHead(200);
+				this.end(data);
+
+			}	
 
 
 
 
 
-	}
+		}
 
 }
 
@@ -135,8 +221,100 @@ class App{
 
 	constructor(){
 
+		this.server=net.createServer(this.handleConnection.bind(this));
+		this.routes={};
+
 
 	}
+
+	get(path,cb){
+
+
+		this.routes['GET']={
+
+			path: cb
+		}
+
+
+	}
+
+	post(path, cb){
+
+
+		this.routes['POST']={
+
+			path: cb
+		}
+
+	}
+
+	listen(port,host){
+
+
+		this.server.listen(port,host);
+	}
+
+	handleConnection(sock){
+
+		sock.on('data',this.handleRequestData.bind(this,sock))
+	}
+
+	handleRequestData(sock,binaryData){
+
+
+		s=binaryData.toString();
+		const req=new Request(s);
+		const res=new Response();
+
+		if(req.headers['Host']===undefined){
+
+			res.setHeader('Content-Type','text/plain');
+			res.send(400,'Error occured, no headers');
+		}
+		else{
+
+			if(this.routes['GET'][req.path]!==undefined){
+
+				let callback=this.routes['GET'][req.path];
+				callback(req,res);
+				this.logResponse(req,res);
+
+
+			}
+			else if(this.routes['POST'][req.path]!==undefined){
+
+				let callback=this.routes['POST'][req.path];
+				callback(req,res);
+				this.logResponse(req,res);
+
+			}
+			else{
+
+				res.setHeader('Content-Type','text/plain');
+				res.send(404,'path does not exist');
+				this.logResponse(req, res);
+				
+
+
+			}
+
+
+
+
+
+		}
+
+
+	}
+
+	logResponse(req, res){
+
+		console.log(`request Method: ${req.method}\nrequest path: ${req.path}\n`)
+		console.log(`resonse code: ${res.statusCode}\nresponse body: ${res.body}\n`)
+
+	}
+
+
 
 
 
@@ -148,6 +326,8 @@ class App{
 
 module.exports={
 
-	Request: Request
+	Request: Request,
+	Response: Response,
+	App: App
 	
 }

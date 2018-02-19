@@ -68,7 +68,7 @@ describe('Response', function() {
 
     beforeEach(mockSocket);
 
-    it('can create a new 200 http response and turn it into a string', function() {
+    it.only('can create a new 200 http response and turn it into a string', function() {
         let s = 'HTTP/1.1 200 OK\r\n';
         s += '\r\n';
         const res = new Response(socket);
@@ -77,7 +77,7 @@ describe('Response', function() {
         expect(res.toString()).to.equal(s);
     });
 
-    it('can create a new 404 http response and turn it into a string', function() {
+    it.only('can create a new 404 http response and turn it into a string', function() {
         let s = 'HTTP/1.1 404 Not Found\r\n';
         s += '\r\n';
         const res = new Response(socket);
@@ -86,7 +86,7 @@ describe('Response', function() {
         expect(res.toString()).to.equal(s);
     });
 
-    it('can create a new 500 http response and turn it into a string', function() {
+    it.only('can create a new 500 http response and turn it into a string', function() {
         let s = 'HTTP/1.1 500 Internal Server Error\r\n';
         s += '\r\n';
         const res = new Response(socket);
@@ -95,7 +95,7 @@ describe('Response', function() {
         expect(res.toString()).to.equal(s);
     });
 
-    it('can set a header', function() {
+    it.only('can set a header', function() {
         const res = new Response(socket);
         res.setHeader('Content-Type', 'text/plain');
         res.statusCode = 200;
@@ -103,7 +103,7 @@ describe('Response', function() {
         expect(res.headers['Content-Type']).to.equal('text/plain');
     });
 
-    it('turn headers and body into a string', function() {
+    it.only('turn headers and body into a string', function() {
         let s = 'HTTP/1.1 200 OK\r\n';
         s += 'Content-Type: text/plain\r\n';
         s += 'X-Foo: bar\r\n';
@@ -118,7 +118,7 @@ describe('Response', function() {
         expect(res.toString()).to.equal(s);
     });
 
-    it('sets status and body... calls end once... when send is called', function() {
+    it.only('sets status and body... calls end once... when send is called', function() {
         const res = new Response(socket);
         res.send(200, 'foo');
 
@@ -129,14 +129,14 @@ describe('Response', function() {
         expect(res.body).to.equal('foo');
     });
 
-    it('calls end once... when end is called', function() {
+    it.only('calls end once... when end is called', function() {
         const res = new Response(socket);
         res.end();
 
         expect(socket.end.callCount).to.equal(1);
     });
 
-    it('can redirect with a statusCode', function() {
+    it.only('can redirect with a statusCode', function() {
         let s = 'HTTP/1.1 302 Found\r\n';
         s += 'Location: http://foo.bar/baz\r\n';
         s += '\r\n';
@@ -150,7 +150,7 @@ describe('Response', function() {
         expect(socket.end.callCount).to.equal(1);
     });
 
-    it('can redirect without a statusCode', function() {
+    it.only('can redirect without a statusCode', function() {
         let s = 'HTTP/1.1 301 Moved Permanently\r\n';
         s += 'Location: http://baz.qux/corge\r\n';
         s += '\r\n';
@@ -164,7 +164,7 @@ describe('Response', function() {
         expect(socket.end.callCount).to.equal(1);
     });
 
-    it('can write without ending', function() {
+    it.only('can write without ending', function() {
         const res = new Response(socket);
         res.write('foo');
 
@@ -172,7 +172,7 @@ describe('Response', function() {
         expect(socket.end.callCount).to.equal(0);
     });
 
-    it('can write headers without ending', function() {
+    it.only('can write headers without ending', function() {
         const res = new Response(socket);
         res.writeHead(200, 'foo');
 
@@ -185,7 +185,7 @@ describe('Response', function() {
 
 describe('App', function() {
 
-    it('.routes object is changed when .get is called', function() {
+    it.only('.routes object is changed when .get is called', function() {
         const app = new App();
         const oldRoutes = JSON.parse(JSON.stringify(app.routes));
         app.get('/', function(req, res) {
@@ -194,7 +194,7 @@ describe('App', function() {
         expect(app.routes).to.not.equal(oldRoutes);
     });
 
-    it('.routes object is changed when .post is called', function() {
+    it.only('.routes object is changed when .post is called', function() {
         const app = new App();
         const oldRoutes = JSON.parse(JSON.stringify(app.routes));
         app.get('/', function(req, res) {
