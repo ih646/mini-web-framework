@@ -1,16 +1,43 @@
 body{
-	background:lightgreen;
+	background:tomato;
+	font-family: Arial, Helvetica, sans-serif;
+
 }
 
 h1{
-	color:blue;
+	color:royalblue;
 	text-shadow: -1px 0px darkblue;
 }
 
 p{
-
+	background: white;
 	border:5px solid black;
 	color: blue;
 	text-align: center;
 
+}
+
+.welcome{
+
+	background: royalblue;
+	border-radius:15px;
+}
+
+ul li{
+
+	display: inline;
+	padding:10px;
+	text-align: center;
+
+}
+
+a {
+
+	color: white;
+
+}
+
+a:hover{
+
+	color: darkblue;
 }
