@@ -1,7 +1,7 @@
 /* better.js */
 
-const App=require('./webframework.js').App
-const app=new APP();
+const App=require('./webframework.js').App;
+const app=new App();
 
 
 app.get('/', function(req,res){
@@ -26,7 +26,7 @@ app.get('/rando', function(req,res){
 })
 
 
-app.get('/css/base.css',function(req,res){
+app.get('/base.css',function(req,res){
 	
 	res.sendFile('base.css');
 })
@@ -37,19 +37,49 @@ app.get('/image1.jpg',function(req,res){
 
 })
 
-app.get('/image2.gif'function(req,res){
+app.get('/image2.jpg',function(req,res){
 
-	res.sendFile('image.gif');
+	res.sendFile('image2.jpg');
 })
 
-app.get('/image3.jpg'function(req,res){
+app.get('/giphy.gif',function(req,res){
+
+	res.sendFile('giphy.gif');
+})
+
+app.get('/image3.jpg',function(req,res){
 
 	res.sendFile('image3.jpg');
 })
 
-app.post('/form',function(req,res){
+app.get('/random',function(req,res){
 
-	res.write('HTTP/1.1 200 OK\r\n\r\n' + req.body);
+	let random=Math.floor(Math.random()*4);
+
+	if (random === 1) {
+       
+        res.sendFile('random1.html')
+    
+    } else if (random === 2) {
+      
+        res.sendFile('random2.html')
+   
+    } else {
+        
+        res.sendFile('random3.html')
+    }
+
 })
 
-app.listen(8080, '127.0.0.1')
+app.post('/form',function(req,res){
+
+	let formBody=req.body.split('=');
+	let input=formBody[1];
+	input=input.replace('&',' ');
+	res.setHeader('Content-Type','text/plain');
+	res.send(200,input);
+	
+
+});
+
+app.listen(3000, '127.0.0.1');

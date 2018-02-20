@@ -106,13 +106,14 @@ class Response{
 
 			this.statusCode=statusCode;
 			this.body=body;
-			this.sock.end(toString());
+			this.sock.end(this.toString());
 		}
 
 		writeHead(statusCode){
 
 			this.statusCode=statusCode;
-			this.sock.write(toString());
+			let response=this.toString();
+			this.sock.write(response);
 
 		}
 		
@@ -130,7 +131,7 @@ class Response{
 		            this.headers['Location'] = statusCode;
 		        }
 		      
-		        this.sock.end(toString());
+		        this.sock.end(this.toString());
 		        
 		       
 		}
@@ -170,8 +171,6 @@ class Response{
 			if(extension==='html' || extension==='css' || extension==='txt'){
 
 				fs.readFile(absolutePath,'utf8',(err,data)=>{
-
-
 				this.handleRead(contentType[extension],err,data)
 
 				});
@@ -182,8 +181,6 @@ class Response{
 			else{
 
 				fs.readFile(absolutePath,{},(err,data)=>{
-
-
 				this.handleRead(contentType[extension],err,data)
 
 				});
@@ -222,7 +219,11 @@ class App{
 	constructor(){
 
 		this.server=net.createServer(this.handleConnection.bind(this));
-		this.routes={};
+		this.routes={
+
+			'GET':{},
+			'POST':{}
+		};
 
 
 	}
@@ -230,10 +231,7 @@ class App{
 	get(path,cb){
 
 
-		this.routes['GET']={
-
-			path: cb
-		}
+		this.routes['GET'][path]=cb
 
 
 	}
@@ -241,10 +239,7 @@ class App{
 	post(path, cb){
 
 
-		this.routes['POST']={
-
-			path: cb
-		}
+		this.routes['POST'][path]=cb
 
 	}
 
@@ -262,9 +257,9 @@ class App{
 	handleRequestData(sock,binaryData){
 
 
-		s=binaryData.toString();
+		let s=binaryData.toString();
 		const req=new Request(s);
-		const res=new Response();
+		const res=new Response(sock);
 
 		if(req.headers['Host']===undefined){
 
@@ -273,33 +268,28 @@ class App{
 		}
 		else{
 
-			if(this.routes['GET'][req.path]!==undefined){
+			if(this.routes['GET'][req.path]!==undefined && req.method==='GET'){
 
 				let callback=this.routes['GET'][req.path];
 				callback(req,res);
-				this.logResponse(req,res);
+				//this.logResponse(req,res);
 
 
 			}
-			else if(this.routes['POST'][req.path]!==undefined){
+			else if(this.routes['POST'][req.path]!==undefined && req.method==='POST'){
 
 				let callback=this.routes['POST'][req.path];
 				callback(req,res);
-				this.logResponse(req,res);
+				//this.logResponse(req,res);
 
 			}
 			else{
 
 				res.setHeader('Content-Type','text/plain');
 				res.send(404,'path does not exist');
-				this.logResponse(req, res);
+				//this.logResponse(req, res);
 				
-
-
 			}
-
-
-
 
 
 		}
@@ -315,13 +305,7 @@ class App{
 	}
 
 
-
-
-
 }
-
-
-
 
 
 module.exports={
