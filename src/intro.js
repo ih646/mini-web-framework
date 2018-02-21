@@ -1,7 +1,7 @@
 /* intro.js */
 
 const net=require("net");
-const webutils=require('./webutils.js')
+const webutils=require('./webutils.js');
 
 const [PORT,HOST]=[3000, '127.0.0.1'];
 
@@ -36,7 +36,7 @@ const routes={
 	'/css/base.css':base,
 	'/picsplz': picsplz,
 	'/img/animal.jpg':animal,
-  	'/showanimage':(sock) => {
+	'/showanimage':(sock) => {
 
 
     sock.write(`HTTP/1.1 301 OK\r\nLocation:/picsplz\r\n\r\n Redirecting`);
@@ -45,7 +45,7 @@ const routes={
   }
 
 
-}
+};
 
 const server=net.createServer((sock)=>{
 
@@ -59,7 +59,7 @@ const server=net.createServer((sock)=>{
 		if(req.method==='POST'){
 
 			sock.write('HTTP/1.1 200 OK\r\n\r\n' + req.body);
-        	sock.end();
+			sock.end();
 
 
 		}
@@ -70,9 +70,7 @@ const server=net.createServer((sock)=>{
 
 
 		}
-		else{
-
-			if(routes.hasOwnProperty(req.path)){
+		else if(routes.hasOwnProperty(req.path)){
 
 			const requestHandler=routes[req.path];
 			requestHandler(sock);
@@ -87,8 +85,6 @@ const server=net.createServer((sock)=>{
 
 
 			}
-
-		}
 
 
 	});

@@ -24,9 +24,9 @@ class Request{
 		headerNames.forEach((headerName)=>{
 
 			const headerParts=headerName.split(': ');
-			this.headers[headerParts[0]]=headerParts[1]
+			this.headers[headerParts[0]]=headerParts[1];
 
-		})
+		});
 
 	
 
@@ -42,7 +42,7 @@ class Request{
 }
 
 
-let contentType={
+const contentType={
 
 	'jpeg': 'image/jpeg',
 	'jpg': 'image/jpg',
@@ -52,9 +52,9 @@ let contentType={
 	'css': 'text/css',
 	'txt': 'text/plain',
 
-}
+};
 
-let statusCodes={
+const statusCodes={
 
 		200: 'OK',
 		301: 'Moved Permanently',
@@ -67,7 +67,7 @@ let statusCodes={
 
 
 
-	}
+	};
 
 
 
@@ -112,37 +112,37 @@ class Response{
 		writeHead(statusCode){
 
 			this.statusCode=statusCode;
-			let response=this.toString();
+			const response=this.toString();
 			this.sock.write(response);
 
 		}
 		
 		redirect(statusCode,url){
 
-			 
-		        if (typeof(statusCode)==='number') {
-		            
-		            this.statusCode = statusCode;
-		            this.headers['Location'] = url;
-		        
-		        } else {
-		            
-		            this.statusCode = 301;
-		            this.headers['Location'] = statusCode;
-		        }
-		      
-		        this.sock.end(this.toString());
-		        
-		       
+
+				if (typeof(statusCode)==='number') {
+
+					this.statusCode = statusCode;
+					this.headers['Location'] = url;
+
+				}
+				else {
+
+					this.statusCode = 301;
+					this.headers['Location'] = statusCode;
+				}
+
+				this.sock.end(this.toString());
+
 		}
 		
 		toString(){
 
 
 
-			let response=`HTTP/1.1 ${this.statusCode} ${statusCodes[this.statusCode]}\r\n`
+			let response=`HTTP/1.1 ${this.statusCode} ${statusCodes[this.statusCode]}\r\n`;
 
-			for(let key in this.headers){
+			for(const key in this.headers){
 
 				response+=`${key}: ${this.headers[key]}\r\n`;
 
@@ -165,13 +165,13 @@ class Response{
 		
 		sendFile(filename){
 
-			let extension=webutils.getExtension(filename);
+			const extension=webutils.getExtension(filename);
 			const absolutePath=path.join(__dirname,'..','/public',filename);
 
 			if(extension==='html' || extension==='css' || extension==='txt'){
 
 				fs.readFile(absolutePath,'utf8',(err,data)=>{
-				this.handleRead(contentType[extension],err,data)
+				this.handleRead(contentType[extension],err,data);
 
 				});
 
@@ -181,7 +181,7 @@ class Response{
 			else{
 
 				fs.readFile(absolutePath,{},(err,data)=>{
-				this.handleRead(contentType[extension],err,data)
+				this.handleRead(contentType[extension],err,data);
 
 				});
 
@@ -200,7 +200,7 @@ class Response{
 			
 			else{
 
-				this.setHeader('Content-Type',contentType)
+				this.setHeader('Content-Type',contentType);
 				this.writeHead(200);
 				this.end(data);
 
@@ -231,7 +231,7 @@ class App{
 	get(path,cb){
 
 
-		this.routes['GET'][path]=cb
+		this.routes['GET'][path]=cb;
 
 
 	}
@@ -239,7 +239,7 @@ class App{
 	post(path, cb){
 
 
-		this.routes['POST'][path]=cb
+		this.routes['POST'][path]=cb;
 
 	}
 
@@ -251,13 +251,13 @@ class App{
 
 	handleConnection(sock){
 
-		sock.on('data',this.handleRequestData.bind(this,sock))
+		sock.on('data',this.handleRequestData.bind(this,sock));
 	}
 
 	handleRequestData(sock,binaryData){
 
 
-		let s=binaryData.toString();
+		const s=binaryData.toString();
 		const req=new Request(s);
 		const res=new Response(sock);
 
@@ -266,11 +266,9 @@ class App{
 			res.setHeader('Content-Type','text/plain');
 			res.send(400,'Error occured, no headers');
 		}
-		else{
+		else if(this.routes['GET'][req.path]!==undefined && req.method==='GET'){
 
-			if(this.routes['GET'][req.path]!==undefined && req.method==='GET'){
-
-				let callback=this.routes['GET'][req.path];
+				const callback=this.routes['GET'][req.path];
 				callback(req,res);
 				//this.logResponse(req,res);
 
@@ -278,7 +276,7 @@ class App{
 			}
 			else if(this.routes['POST'][req.path]!==undefined && req.method==='POST'){
 
-				let callback=this.routes['POST'][req.path];
+				const callback=this.routes['POST'][req.path];
 				callback(req,res);
 				//this.logResponse(req,res);
 
@@ -292,15 +290,12 @@ class App{
 			}
 
 
-		}
-
-
 	}
 
 	logResponse(req, res){
 
-		console.log(`request Method: ${req.method}\nrequest path: ${req.path}\n`)
-		console.log(`resonse code: ${res.statusCode}\nresponse body: ${res.body}\n`)
+		console.log(`request Method: ${req.method}\nrequest path: ${req.path}\n`);
+		console.log(`resonse code: ${res.statusCode}\nresponse body: ${res.body}\n`);
 
 	}
 
@@ -314,4 +309,4 @@ module.exports={
 	Response: Response,
 	App: App
 	
-}
+};

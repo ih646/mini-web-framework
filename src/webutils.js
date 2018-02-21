@@ -15,7 +15,7 @@ function getExtension(filename){
 
 function sendTextFile(filename,sock){
 
-	let extension=getExtension(filename);
+	const extension=getExtension(filename);
 	const absolutePath=path.join(__dirname,'..','/public',filename);
 
 	fs.readFile(absolutePath,'utf8',(err,data)=>{
@@ -42,7 +42,7 @@ function sendTextFile(filename,sock){
 
 function sendImage(filename, sock){
 
-	let extension=getExtension(filename);
+	const extension=getExtension(filename);
 	const absolutePath=path.join(__dirname,'..','public',filename);
 
 	fs.readFile(absolutePath,{},(err,data)=>{
@@ -71,4 +71,4 @@ module.exports={
 	sendImage:sendImage
 
 
-}
+};
