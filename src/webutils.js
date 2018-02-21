@@ -17,7 +17,6 @@ function sendTextFile(filename,sock){
 
 	let extension=getExtension(filename);
 	const absolutePath=path.join(__dirname,'..','/public',filename);
-	console.log(extension);
 
 	fs.readFile(absolutePath,'utf8',(err,data)=>{
 
@@ -28,8 +27,7 @@ function sendTextFile(filename,sock){
 
 	}
 	else{
-		console.log("Sending text file data: \n");
-		console.log(`HTTP/1.1 200 OK\r\nContent-Type: text/${extension}\r\n\r\n${data}`);
+		
 		sock.write(`HTTP/1.1 200 OK\r\nContent-Type: text/${extension}\r\n\r\n${data}`);
 
 	}
@@ -46,8 +44,6 @@ function sendImage(filename, sock){
 
 	let extension=getExtension(filename);
 	const absolutePath=path.join(__dirname,'..','public',filename);
-	console.log(absolutePath);
-	console.log(extension);
 
 	fs.readFile(absolutePath,{},(err,data)=>{
 	// console.log("READ IMG");

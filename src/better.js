@@ -7,14 +7,14 @@ const app=new App();
 app.get('/', function(req,res){
 
 
-	res.sendFile('site.html');
+	res.sendFile('/html/site.html');
 
 })
 
 app.get('/form', function(req,res){
 
 
-	res.sendFile('form.html');
+	res.sendFile('/html/form.html');
 
 })
 
@@ -26,30 +26,30 @@ app.get('/rando', function(req,res){
 })
 
 
-app.get('/base.css',function(req,res){
+app.get('/css/base.css',function(req,res){
 	
-	res.sendFile('base.css');
+	res.sendFile('/css/base.css');
 })
 
 app.get('/image1.jpg',function(req,res){
 
-	res.sendFile('image1.jpg');
+	res.sendFile('/img/image1.jpg');
 
 })
 
 app.get('/image2.jpg',function(req,res){
 
-	res.sendFile('image2.jpg');
+	res.sendFile('/img/image2.jpg');
 })
 
-app.get('/giphy.gif',function(req,res){
+app.get('/image2.gif',function(req,res){
 
-	res.sendFile('giphy.gif');
+	res.sendFile('/img/image2.gif');
 })
 
-app.get('/image3.jpg',function(req,res){
+app.get('/image3',function(req,res){
 
-	res.sendFile('image3.jpg');
+	res.sendFile('/img/image3.jpg');
 })
 
 app.get('/random',function(req,res){
@@ -58,24 +58,25 @@ app.get('/random',function(req,res){
 
 	if (random === 1) {
        
-        res.sendFile('random1.html')
+        res.sendFile('/html/random1.html')
     
     } else if (random === 2) {
       
-        res.sendFile('random2.html')
+        res.sendFile('/html/random2.html')
    
     } else {
         
-        res.sendFile('random3.html')
+        res.sendFile('/html/random3.html')
     }
 
 })
 
 app.post('/form',function(req,res){
 
-	let formBody=req.body.split('=');
-	let input=formBody[1];
-	input=input.replace('&',' ');
+	let formReplies=req.body.split('&');
+	let input1=formReplies[0].replace('character=','');
+	let input2=formReplies[1].replace('quote=',' ');
+	let input=input1+input2;
 	res.setHeader('Content-Type','text/plain');
 	res.send(200,input);
 	

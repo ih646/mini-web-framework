@@ -3,7 +3,7 @@
 const net=require("net");
 const webutils=require('./webutils.js')
 
-const [PORT,HOST]=[8080, '127.0.0.1'];
+const [PORT,HOST]=[3000, '127.0.0.1'];
 
 
 class Request {
@@ -22,11 +22,11 @@ class Request {
 
 }
 
-const homepage=webutils.sendTextFile.bind(null,'index.html');
-const stylish=webutils.sendTextFile.bind(null,'stylish.html');
-const base=webutils.sendTextFile.bind(null,'base.css');
-const picsplz=webutils.sendTextFile.bind(null,'image.html');
-const animal=webutils.sendImage.bind(null,'animal.jpg');
+const homepage=webutils.sendTextFile.bind(null,'/html/index.html');
+const stylish=webutils.sendTextFile.bind(null,'/html/stylish.html');
+const base=webutils.sendTextFile.bind(null,'/css/base.css');
+const picsplz=webutils.sendTextFile.bind(null,'/html/image.html');
+const animal=webutils.sendImage.bind(null,'/img/animal.jpg');
 
 
 const routes={
@@ -58,9 +58,15 @@ const server=net.createServer((sock)=>{
 
 		if(req.method==='POST'){
 
-			console.log(req.method);
 			sock.write('HTTP/1.1 200 OK\r\n\r\n' + req.body);
         	sock.end();
+
+
+		}
+		else if(req.method!=='POST' && req.method!=='GET'){
+
+			sock.write('HTTP/1.1 405 Method Not Allowed\r\nContent-Type:text/plain\r\n\r\nMethod not allowed');
+			sock.end();
 
 
 		}

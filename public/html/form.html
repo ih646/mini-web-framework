@@ -3,7 +3,7 @@
 
 <head>
     <title>Home</title>
-    <link rel="stylesheet" type="text/css" href="base.css">
+    <link rel="stylesheet" href="/css/base.css">
 </head>
 
 <body>
@@ -12,6 +12,7 @@
         
         <h1>Welcome to my spiderman fan page!</h1>
 
+   
         <ul>
             <li><a href="/">Home</a></li>
             <li><a href="/form">form</a></li>
@@ -19,8 +20,24 @@
             <li><a href="/rando">Rando (Redirect)</a></li>
         </ul>
     </div>
+
+    <h2> Got any favourite character quotes</h2>
     
-    <img src="giphy.gif" width="750px">
+    <form method="POST" action="">
+		  <div>
+		      Character: <input type="text" name="character" value="">	
+		  </div>
+		  
+		  <div>
+		      Quote: <input type="text" name="quote" value="">	
+		  </div>
+		  
+		  <div>
+		      <input type="submit">	
+		  </div>
+	</form>
+
 </body>
 
 </html>
+
