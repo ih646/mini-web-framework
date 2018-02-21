@@ -270,7 +270,7 @@ class App{
 
 				const callback=this.routes['GET'][req.path];
 				callback(req,res);
-				//this.logResponse(req,res);
+				sock.on('close', this.logResponse.bind(this, req, res));
 
 
 			}
@@ -278,14 +278,15 @@ class App{
 
 				const callback=this.routes['POST'][req.path];
 				callback(req,res);
-				//this.logResponse(req,res);
+				sock.on('close', this.logResponse.bind(this, req, res));
 
 			}
 			else{
 
 				res.setHeader('Content-Type','text/plain');
 				res.send(404,'path does not exist');
-				//this.logResponse(req, res);
+				sock.on('close', this.logResponse.bind(this, req, res));
+				
 				
 			}
 
@@ -295,7 +296,7 @@ class App{
 	logResponse(req, res){
 
 		console.log(`request Method: ${req.method}\nrequest path: ${req.path}\n`);
-		console.log(`resonse code: ${res.statusCode}\nresponse body: ${res.body}\n`);
+		console.log(`resonse code: ${res.statusCode}\nresponse body: ${statusCodes[res.statusCode]}\n`);
 
 	}
 
